@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -14,6 +17,7 @@ class _SignupState extends State<Signup> {
   TextEditingController passwordcontroller = TextEditingController();
   TextEditingController confirmpasswordcontroller = TextEditingController();
   TextEditingController dateofbirthcontroller = TextEditingController();
+  TextEditingController timecontroller = TextEditingController();
   String selectedgender = "";
   bool passwordmatch = true;
 
@@ -23,13 +27,39 @@ class _SignupState extends State<Signup> {
     });
   }
 
+  Future<void> selecteddate(context) async {
+    final DateTime? pickeddate = await showDatePicker(
+        context: context, firstDate: DateTime(1950), lastDate: DateTime.now());
+    if (pickeddate != null) {
+      String formatdate = DateFormat("dd-MMM-yyyy").format(pickeddate);
+      setState(() {
+        dateofbirthcontroller.text = formatdate;
+      });
+    }
+  }
+
+  Future<void> selectedtime(context) async {
+    final TimeOfDay? pickedtime =
+        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    if (pickedtime != null) {
+      String formattime = pickedtime.format(context);
+      setState(() {
+        timecontroller.text = formattime;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "SIGNUP",
-          style: TextStyle(color: Colors.white),
+        title: const Row(
+          children: [
+            Text(
+              "SIGNUP",
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
         ),
         backgroundColor: Colors.blue,
       ),
@@ -65,6 +95,22 @@ class _SignupState extends State<Signup> {
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(), labelText: "Name"),
                   ),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                      onTap: () {
+                        selectedtime(context);
+                        signkey.currentState!.validate();
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "required field";
+                        } else {
+                          return null;
+                        }
+                      },
+                      controller: timecontroller,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(), labelText: "time")),
                   RadioListTile(
                     title: const Text("male"),
                     value: "Male",
@@ -96,11 +142,18 @@ class _SignupState extends State<Signup> {
                     },
                   ),
                   TextFormField(
+                      keyboardType: TextInputType.datetime,
+                      readOnly: true,
                       onTap: () {
-                        showDatePicker(
-                            context: context,
-                            firstDate: DateTime(1950),
-                            lastDate: DateTime.now());
+                        selecteddate(context);
+                        signkey.currentState!.validate();
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "required field";
+                        } else {
+                          return null;
+                        }
                       },
                       controller: dateofbirthcontroller,
                       decoration: const InputDecoration(
@@ -128,7 +181,12 @@ class _SignupState extends State<Signup> {
                   TextFormField(
                     obscureText: true,
                     controller: passwordcontroller,
+                    
+                    onTap: () {
+                      signkey.currentState!.validate();
+                    },
                     validator: (value) {
+                      checkpasswordmatch();
                       if (value == null || value.isEmpty) {
                         return "required field";
                       } else {
@@ -142,24 +200,33 @@ class _SignupState extends State<Signup> {
                   TextFormField(
                     obscureText: true,
                     controller: confirmpasswordcontroller,
+                    
                     validator: (value) {
                       checkpasswordmatch();
+              
                       if (value == null || value.isEmpty) {
                         return "required field!";
-                      } else {
+                      }
+                      bool isvalid=passwordmatch;
+                       if(!isvalid)
+                      {
+                        return"passwords do not match";
+                      } 
+                      else {
                         return null;
                       }
                     },
-                    decoration:  InputDecoration(
-                      errorText: passwordmatch ? null :"passwords do not match!",
-                        border: OutlineInputBorder(),
+                    decoration:const InputDecoration(
+                        // errorText:
+                        //     passwordmatch ? null : "passwords do not match!",
+                        border:  OutlineInputBorder(),
                         labelText: "Confirm password"),
                   ),
                   const SizedBox(height: 10),
                   OutlinedButton(
                     onPressed: () {
                       checkpasswordmatch();
-                      print(selectedgender);
+                      log(selectedgender);
                       if (signkey.currentState!.validate()) {
                         Navigator.of(context).pop();
                       }
