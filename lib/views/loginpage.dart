@@ -105,7 +105,9 @@ class Login extends StatelessWidget {
                 onPressed: () {
                   if (loginkey.currentState!.validate()) {
                     login(usernamecontroller.text, passwordcontroller.text);
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const Homepage()));
                   }
+
                 },
                 child: const Text(
                   "LOGIN",

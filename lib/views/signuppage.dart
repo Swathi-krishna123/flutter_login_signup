@@ -18,8 +18,10 @@ class _SignupState extends State<Signup> {
   TextEditingController confirmpasswordcontroller = TextEditingController();
   TextEditingController dateofbirthcontroller = TextEditingController();
   TextEditingController timecontroller = TextEditingController();
+
   String selectedgender = "";
   bool passwordmatch = true;
+  bool ischecked = false;
 
   void checkpasswordmatch() {
     setState(() {
@@ -181,7 +183,6 @@ class _SignupState extends State<Signup> {
                   TextFormField(
                     obscureText: true,
                     controller: passwordcontroller,
-                    
                     onTap: () {
                       signkey.currentState!.validate();
                     },
@@ -200,35 +201,58 @@ class _SignupState extends State<Signup> {
                   TextFormField(
                     obscureText: true,
                     controller: confirmpasswordcontroller,
-                    
                     validator: (value) {
                       checkpasswordmatch();
-              
+
                       if (value == null || value.isEmpty) {
                         return "required field!";
                       }
-                      bool isvalid=passwordmatch;
-                       if(!isvalid)
-                      {
-                        return"passwords do not match";
-                      } 
-                      else {
+                      bool isvalid = passwordmatch;
+                      if (!isvalid) {
+                        return "passwords do not match";
+                      } else {
                         return null;
                       }
                     },
-                    decoration:const InputDecoration(
+                    decoration: const InputDecoration(
                         // errorText:
                         //     passwordmatch ? null : "passwords do not match!",
-                        border:  OutlineInputBorder(),
+                        border: OutlineInputBorder(),
                         labelText: "Confirm password"),
                   ),
                   const SizedBox(height: 10),
-                  OutlinedButton(
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: ischecked,
+                        onChanged: (value) {
+                          setState(() {
+                            ischecked = value!;
+                          });
+                        },
+                      ),
+                      const Text(
+                        "I agree these terms and condition",
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ],
+                  ),
+                  ElevatedButton(
+                    style:  ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(
+                            ischecked == false ? Colors.grey : Colors.green)),
                     onPressed: () {
                       checkpasswordmatch();
                       log(selectedgender);
                       if (signkey.currentState!.validate()) {
-                        Navigator.of(context).pop();
+                        ischecked == false
+                            ? ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content:
+                                      Text("please agree terms and condition"),
+                                ),
+                              )
+                            : Navigator.of(context).pop();
                       }
                     },
                     child: const Text(
