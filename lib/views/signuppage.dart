@@ -51,6 +51,24 @@ class _SignupState extends State<Signup> {
     }
   }
 
+  List<String> items = [
+    "thiruvanandapuram",
+    "kollam",
+    "pathanamthitta",
+    "alappuzha",
+    "kottayam",
+    "idukki",
+    "ernakulam",
+    "thrissur",
+    "palakkad",
+    "malappuram",
+    "kozhikkod",
+    "wayanad",
+    "kannur",
+    "kasarkkod"
+  ];
+  String? selecteditem = "palakkad";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,9 +146,11 @@ class _SignupState extends State<Signup> {
                     value: "female",
                     groupValue: selectedgender,
                     onChanged: (value) {
-                      setState(() {
-                        selectedgender = value.toString();
-                      });
+                      setState(
+                        () {
+                          selectedgender = value.toString();
+                        },
+                      );
                     },
                   ),
                   RadioListTile(
@@ -143,6 +163,26 @@ class _SignupState extends State<Signup> {
                       });
                     },
                   ),
+                  const SizedBox(),
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(border: OutlineInputBorder(),hintText: "State"),
+                    value: selecteditem,
+                    items: items
+                    
+                        .map(
+                          (item) => DropdownMenuItem(
+                            value: item,
+                            child: Text(item),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (item) => setState(
+                      () {
+                        selecteditem = item;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
                   TextFormField(
                       keyboardType: TextInputType.datetime,
                       readOnly: true,
@@ -238,7 +278,7 @@ class _SignupState extends State<Signup> {
                     ],
                   ),
                   ElevatedButton(
-                    style:  ButtonStyle(
+                    style: ButtonStyle(
                         backgroundColor: MaterialStatePropertyAll(
                             ischecked == false ? Colors.grey : Colors.green)),
                     onPressed: () {
